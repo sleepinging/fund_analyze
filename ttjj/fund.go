@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-24 20:43:29
  * @LastEditors: taowentao
- * @LastEditTime: 2021-06-24 21:29:08
+ * @LastEditTime: 2021-06-26 17:22:11
  */
 package ttjj
 
@@ -30,7 +30,7 @@ func get_fund_json(code string) (res string, err error) {
 	return
 }
 
-func GetFundDaysInfo(code string) (days_info []*module.FundDaysInfo, err error) {
+func GetFundDaysInfo(code string) (days_info []*module.FundDayInfo, err error) {
 	res, err := get_fund_json(code)
 	if err != nil {
 		return
@@ -47,7 +47,7 @@ func GetFundDaysInfo(code string) (days_info []*module.FundDaysInfo, err error) 
 	}
 	for _, day_info_obj := range vs {
 		if day_info, ok := day_info_obj.(map[string]interface{}); ok {
-			info := new(module.FundDaysInfo)
+			info := new(module.FundDayInfo)
 
 			if accumulated_net, ok := day_info["LJJZ"].(string); ok {
 				info.AccumulatedNet, err = strconv.ParseFloat(accumulated_net, 64)
