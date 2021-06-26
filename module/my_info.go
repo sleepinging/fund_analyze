@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-26 17:23:47
  * @LastEditors: taowentao
- * @LastEditTime: 2021-06-26 17:42:00
+ * @LastEditTime: 2021-06-26 18:38:39
  */
 
 package module
@@ -31,7 +31,14 @@ type MyInfo struct {
 }
 
 //基金收益率
-func (mf *MyFund) Yield(day time.Time) (yield float64) {
+func (mf *MyFund) Yield(day time.Time) (yield float64, err error) {
+	//(基金价值-成本) / 成本
+	//当日净值
+	day_info, err := mf.Fund.DaysInfo.GetFundDayInfo(day)
+	if err != nil {
+		return
+	}
+	yield = (day_info.AccumulatedNet*mf.TotalShare - mf.TotolCost) / mf.TotolCost
 	return
 }
 

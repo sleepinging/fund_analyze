@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-24 20:03:02
  * @LastEditors: taowentao
- * @LastEditTime: 2021-06-26 17:13:17
+ * @LastEditTime: 2021-06-26 18:36:20
  */
 
 package main
@@ -11,7 +11,6 @@ package main
 import (
 	"fmt"
 	"fund_analyze/ttjj"
-	"log"
 	"time"
 )
 
@@ -27,13 +26,11 @@ func main() {
 	if err != nil {
 		fmt.Print(err)
 	}
-	for _, v := range days_info {
-		fmt.Println(v.Date, ",", v.AccumulatedNet)
-		t, err := time.ParseInLocation("2006-1-2", v.Date, time.Local)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		day_op(t, v.AccumulatedNet)
+	// day, _ := time.ParseInLocation("2006-1-2", "2020-07-01", time.Local)
+	// info, err := days_info.GetFundDayInfo(day)
+	// fmt.Println(info)
+	for k, v := range days_info.DaysInfo {
+		fmt.Println(k.Format("2006-1-2"), ",", v.AccumulatedNet)
+		day_op(v.Date, v.AccumulatedNet)
 	}
 }
