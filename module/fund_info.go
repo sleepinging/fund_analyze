@@ -3,12 +3,13 @@
  * @Author: taowentao
  * @Date: 2021-06-24 21:27:32
  * @LastEditors: taowentao
- * @LastEditTime: 2021-06-26 19:28:54
+ * @LastEditTime: 2021-07-25 16:11:56
  */
 package module
 
 import (
 	"errors"
+	"fund_analyze/util"
 	"time"
 
 	mapset "github.com/deckarep/golang-set"
@@ -28,21 +29,21 @@ type FundInfo struct {
 }
 
 type FundDaysInfo struct {
-	DaysInfo map[time.Time]*FundDayInfo
+	DaysInfo map[uint32]*FundDayInfo
 	//cache
-	StartDay time.Time
+	StartDay uint32
 }
 
 type FundDayInfo struct {
-	Date           time.Time
+	Date           uint32
 	AccumulatedNet float64
 }
 
 //基金当日信息,如果不存在就前一天
 func (days_info *FundDaysInfo) GetFundDayInfoOrBefore(day time.Time) (day_info *FundDayInfo, err error) {
-	day_info, ok := days_info.DaysInfo[day]
-	for ; !ok; day_info, ok = days_info.DaysInfo[day] {
-		if day.Before(days_info.StartDay) {
+	day_info, ok := days_info.DaysInfo[util.ParseTimeToDays(day)]
+	for ; !ok; day_info, ok = days_info.DaysInfo[util.ParseTimeToDays(day)] {
+		if day.Before(util.ParseDaysToTime(days_info.StartDay)) {
 			err = errors.New("net find day info")
 			return
 		}
@@ -54,9 +55,9 @@ func (days_info *FundDaysInfo) GetFundDayInfoOrBefore(day time.Time) (day_info *
 
 //基金当日信息,如果不存在就后一天
 func (days_info *FundDaysInfo) GetFundDayInfoOrAfter(day time.Time) (day_info *FundDayInfo, err error) {
-	day_info, ok := days_info.DaysInfo[day]
-	for ; !ok; day_info, ok = days_info.DaysInfo[day] {
-		if day.Before(days_info.StartDay) {
+	day_info, ok := days_info.DaysInfo[util.ParseTimeToDays(day)]
+	for ; !ok; day_info, ok = days_info.DaysInfo[util.ParseTimeToDays(day)] {
+		if day.Before(util.ParseDaysToTime(days_info.StartDay)) {
 			err = errors.New("net find day info")
 			return
 		}

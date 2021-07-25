@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-26 17:23:47
  * @LastEditors: taowentao
- * @LastEditTime: 2021-06-26 19:22:05
+ * @LastEditTime: 2021-07-25 16:03:26
  */
 
 package module
@@ -15,8 +15,8 @@ import (
 )
 
 type MyFund struct {
-	FundInfo   *FundInfo             //基金信息
-	FundShares map[time.Time]float64 //基金份额信息 [确认时间]份额
+	FundInfo   *FundInfo          //基金信息
+	FundShares map[uint32]float64 //基金份额信息 [确认时间]份额
 	//cache
 	TotalShare   float64 //基金总份额
 	TotolCost    float64 //基金总花费
@@ -108,6 +108,7 @@ func (mi *MyInfo) SaleFund(day time.Time, fund_info *FundInfo, share float64) (m
 		return
 	}
 	// TODO: 计算手续费
+
 	money = day_info.AccumulatedNet * share
 
 	my_fund.TotalShare -= share
