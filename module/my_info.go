@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-26 17:23:47
  * @LastEditors: taowentao
- * @LastEditTime: 2021-07-25 16:03:26
+ * @LastEditTime: 2021-07-25 16:58:53
  */
 
 package module
@@ -32,6 +32,7 @@ type MyInfo struct {
 
 func (mi *MyInfo) Init(money float64) {
 	mi.MyFunds = make(map[string]*MyFund)
+	mi.MoneyAvailable = money
 }
 
 //基金收益率
@@ -67,6 +68,7 @@ func (mi *MyInfo) PurchaseFund(day time.Time, fund_info *FundInfo, cost float64)
 	if !ok {
 		my_fund = new(MyFund)
 		my_fund.FundInfo = fund_info
+		my_fund.FundShares = make(map[uint32]float64)
 		mi.MyFunds[fund_info.Code] = my_fund
 	}
 	//计算当日净值

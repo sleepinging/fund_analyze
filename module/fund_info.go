@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2021-06-24 21:27:32
  * @LastEditors: taowentao
- * @LastEditTime: 2021-07-25 16:11:56
+ * @LastEditTime: 2021-07-25 16:45:04
  */
 package module
 
@@ -11,20 +11,19 @@ import (
 	"errors"
 	"fund_analyze/util"
 	"time"
-
-	mapset "github.com/deckarep/golang-set"
 )
 
 //卖出手续费
 type SaleFee struct {
-	Level mapset.Set
+	Day uint32
+	Fee float64
 }
 
 type FundInfo struct {
 	Code string
 	// Name        string
-	PurchaseFee float64  //买入手续费
-	SaleFee     *SaleFee //卖出手续费
+	PurchaseFee float64   //买入手续费
+	SaleFee     []SaleFee //卖出手续费
 	DaysInfo    *FundDaysInfo
 }
 
@@ -37,6 +36,12 @@ type FundDaysInfo struct {
 type FundDayInfo struct {
 	Date           uint32
 	AccumulatedNet float64
+}
+
+func (fi *FundInfo) Init(code string, pfee float64, sfee []SaleFee) {
+	fi.Code = code
+	fi.PurchaseFee = pfee
+	fi.SaleFee = sfee
 }
 
 //基金当日信息,如果不存在就前一天
