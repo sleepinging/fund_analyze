@@ -3,14 +3,16 @@
  * @Author: taowentao
  * @Date: 2021-06-26 17:23:47
  * @LastEditors: taowentao
- * @LastEditTime: 2021-07-25 16:58:53
+ * @LastEditTime: 2021-07-25 17:35:53
  */
 
 package module
 
 import (
 	"fmt"
+	"fund_analyze/util"
 	"log"
+	"sort"
 	"time"
 )
 
@@ -82,7 +84,7 @@ func (mi *MyInfo) PurchaseFund(day time.Time, fund_info *FundInfo, cost float64)
 		return
 	}
 	day_net := cost * (1 - fund_info.PurchaseFee) / day_info.AccumulatedNet
-	my_fund.FundShares[confirm_day.Date] = day_net
+	my_fund.FundShares[confirm_day.Date] += day_net
 	my_fund.TotalShare += day_net
 	my_fund.TotolCost += cost
 
@@ -110,10 +112,52 @@ func (mi *MyInfo) SaleFund(day time.Time, fund_info *FundInfo, share float64) (m
 		return
 	}
 	// TODO: 计算手续费
+	var fee float64
+	//排序
+	var times []int
+	//计算需要卖出哪几份
+	//剩余
+	left_share := share
+	for k := range my_fund.FundShares {
+		times = append(times, int(k))
+	}
+	sort.Ints(times)
+	for t := range times {
+		s := my_fund.FundShares[uint32(t)]
+		//本次卖出份额
+		s_t := s
+		if left_share >= s {
+			delete(my_fund.FundShares, uint32(t))
+			left_share -= s
+			s_t = s
+		} else {
+			my_fund.FundShares[uint32(t)] -= left_share
+			left_share = 0
+			s_t = left_share
+		}
+
+		//确认之后的天数
+		//如果超过最后一级全部按照最低算
+		ack_days := util.ParseTimeToDays(day) - uint32(t)
+		if ack_days > my_fund.FundInfo.SaleFee[len(my_fund.FundInfo.SaleFee)-1].Day {
+			fee += day_info.AccumulatedNet * s_t * my_fund.FundInfo.SaleFee[len(my_fund.FundInfo.SaleFee)-1].Fee
+		} else {
+			for _, sf := range my_fund.FundInfo.SaleFee {
+				if ack_days < sf.Day {
+					fee += day_info.AccumulatedNet * s_t * sf.Fee
+					break
+				}
+			}
+		}
+
+		if left_share == 0 {
+			break
+		}
+	}
 
 	money = day_info.AccumulatedNet * share
 
 	my_fund.TotalShare -= share
-	my_fund.TotolBenefit += money
+	my_fund.TotolBenefit += money - fee
 	return
 }
